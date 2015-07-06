@@ -30,13 +30,13 @@ Symmetric encryption example:
 
 Public key signature example:
 
+    $ message="The truth, the whole truth, and nothing but the truth."
     $ signingkey=$(clinacl signinggen)
     $ echo $signingkey
     95faf19820c827aae2959e01beb81195a14d23d70018d79c26976f027fc405ec
     $ verifykey=$(clinacl verifygen $signingkey)
     $ echo $verifykey
     b83e67e7b5c2b35e09745bf559392e17dc960e18a39bec2adae8b97b5ab02fd9
-    $ message="The truth, the whole truth, and nothing but the truth."
     $ echo message | clinacl sign $signingkey
     ec94d3a3c3aeac1d8361c4be719314f396815c7852706252698091034b42f75416bfafe203f61876d2f6185fd495ca656fe6fdb4a0b86ba9323efe77a8410c006d6573736167650a
     $ echo $message | clinacl sign $signingkey | clinacl verify $verifykey
