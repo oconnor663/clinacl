@@ -31,6 +31,22 @@ def from_hex(hex):
     return binascii.unhexlify(hex.strip())
 
 
+def read_from_stdin():
+    # Python 2 has no sys.stdin.buffer.
+    if sys.version_info.major == 2:
+        return sys.stdin.read()
+    else:
+        return sys.stdin.buffer.read()
+
+
+def write_to_stdout(bytes):
+    # Python 2 has no sys.stdout.buffer.
+    if sys.version_info.major == 2:
+        return sys.stdout.write(bytes)
+    else:
+        return sys.stdout.buffer.write(bytes)
+
+
 def secretgen():
     keybytes = nacl.utils.random(nacl.secret.SecretBox.KEY_SIZE)
     print_(to_hex(keybytes))
@@ -43,7 +59,7 @@ def encrypt(keyhex, noncehex):
     else:
         noncebytes = nacl.utils.random(nacl.secret.SecretBox.NONCE_SIZE)
     secretbox = nacl.secret.SecretBox(keybytes)
-    plainbytes = sys.stdin.buffer.read()
+    plainbytes = read_from_stdin()
     cipherbytes = secretbox.encrypt(plainbytes, noncebytes)
     cipherhex = to_hex(cipherbytes)
     print_(cipherhex)
@@ -55,7 +71,7 @@ def decrypt(keyhex):
     cipherhex = sys.stdin.read()
     cipherbytes = from_hex(cipherhex.strip())
     plainbytes = secretbox.decrypt(cipherbytes)
-    sys.stdout.buffer.write(plainbytes)
+    write_to_stdout(plainbytes)
 
 
 def signinggen():
@@ -72,7 +88,7 @@ def verifygen(keyhex):
 def sign(keyhex):
     keybytes = from_hex(keyhex)
     signingkey = nacl.signing.SigningKey(keybytes)
-    plainbytes = sys.stdin.buffer.read()
+    plainbytes = read_from_stdin()
     attached_sig = signingkey.sign(plainbytes)
     print_(to_hex(attached_sig))
 
@@ -83,7 +99,7 @@ def verify(keyhex):
     attached_sig_hex = sys.stdin.read()
     attached_sig_bytes = from_hex(attached_sig_hex)
     plainbytes = verifykey.verify(attached_sig_bytes)
-    sys.stdout.buffer.write(plainbytes)
+    write_to_stdout(plainbytes)
 
 
 def keybase():
@@ -98,7 +114,7 @@ def keybase():
     detatched_sig_bytes = sig_obj['body']['sig']
     sig_payload = sig_obj['body']['payload']
     attached_sig_bytes = detatched_sig_bytes + sig_payload
-    sys.stdout.buffer.write(verifykey.verify(attached_sig_bytes))
+    write_to_stdout(verifykey.verify(attached_sig_bytes))
 
 
 def main():
