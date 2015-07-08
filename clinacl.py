@@ -103,13 +103,17 @@ def verify(keyhex):
 
 
 def keybase():
+    # A Keybase NaCl signature is a Base64-encoded MessagePack blob containing
+    # the payload, the signing KID, and the detatched signature bytes. We
+    # decode, unpack, and then verify the signature. If it's valid, we print
+    # the payload (which is usually a JSON blob).
     sig_base64 = sys.stdin.read()
     sig_msgpack_bytes = base64.b64decode(sig_base64)
     sig_obj = umsgpack.unpackb(sig_msgpack_bytes)
     keybytes_tagged = sig_obj['body']['key']
-    # Keybase KIDs are type-tagged with two bytes at the front and
-    # one byte in the back.
-    keybytes = keybytes_tagged[2:34]
+    # Keybase KIDs are just NaCl public keys type-tagged with two bytes at the
+    # front and one byte in the back. Stripping these gives the key.
+    keybytes = keybytes_tagged[2:-1]
     verifykey = nacl.signing.VerifyKey(keybytes)
     detatched_sig_bytes = sig_obj['body']['sig']
     sig_payload = sig_obj['body']['payload']
