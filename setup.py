@@ -16,5 +16,5 @@ setuptools.setup(
             'clinacl = clinacl:main',
         ]
     },
-    install_requires=['docopt', 'u-msgpack-python', 'pynacl']
+    install_requires=['docopt', 'u-msgpack-python', 'pynacl', 'six']
 )
