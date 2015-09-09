@@ -19,8 +19,11 @@ Usage:
     clinacl verifygen <signingkey>
     clinacl sign <signingkey>
     clinacl verify <verifykey>
-    clinacl keybase
+    clinacl keybase sign <signingkey>
+    clinacl keybase verify
 """
+
+NACL_SIG_LEN = 64
 
 
 def to_hex(bytes):
@@ -102,7 +105,33 @@ def verify(keyhex):
     write_to_stdout(plainbytes)
 
 
-def keybase():
+def keybase_sign(keyhex):
+    signing_keybytes = from_hex(keyhex)
+    signingkey = nacl.signing.SigningKey(signing_keybytes)
+    verify_keybytes = signingkey.verify_key.encode()
+    plainbytes = read_from_stdin()
+    attached_sig = signingkey.sign(plainbytes)
+    detatched_sig = attached_sig[:NACL_SIG_LEN]
+    # This is the signature format currently used by Keybase's servers. See the
+    # comments in keybase_verify().
+    blob = {
+        'body': {
+            'payload': plainbytes,
+            'key': b'\x01\x20' + verify_keybytes + b'\x0a',
+            'sig': detatched_sig,
+            'detached': True,
+            'sig_type': 32,
+            'hash_type': 10
+        },
+        'tag': 514,
+        'version': 1,
+    }
+    sig_msgpack_bytes = umsgpack.packb(blob)
+    sig_base64 = base64.b64encode(sig_msgpack_bytes)
+    write_to_stdout(sig_base64)
+
+
+def keybase_verify():
     # A Keybase NaCl signature is a Base64-encoded MessagePack blob containing
     # the payload, the signing KID, and the detatched signature bytes. We
     # decode, unpack, and then verify the signature. If it's valid, we print
@@ -133,12 +162,16 @@ def main():
         signinggen()
     elif args['verifygen']:
         verifygen(args['<signingkey>'])
-    elif args['sign']:
-        sign(args['<signingkey>'])
-    elif args['verify']:
-        verify(args['<verifykey>'])
     elif args['keybase']:
-        keybase()
+        if args['sign']:
+            keybase_sign(args['<signingkey>'])
+        elif args['verify']:
+            keybase_verify()
+    else:
+        if args['sign']:
+            sign(args['<signingkey>'])
+        elif args['verify']:
+            verify(args['<verifykey>'])
 
 
 if __name__ == '__main__':
