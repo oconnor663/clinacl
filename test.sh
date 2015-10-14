@@ -5,14 +5,14 @@ set -o pipefail
 
 cd $(dirname "$BASH_SOURCE")
 
-venv_two=/tmp/clinacl_venv_python2
+venv_two="./venv_python2"
 if [[ ! -e "$venv_two" ]] ; then
   echo === creating Python 2 virtualenv ===
   virtualenv -p python2 "$venv_two"
   (source "$venv_two/bin/activate" && pip install --editable .)
 fi
 
-venv_three=/tmp/clinacl_venv_python3
+venv_three="./venv_python3"
 if [[ ! -e "$venv_three" ]] ; then
   echo === creating Python 3 virtualenv ===
   virtualenv -p python3 "$venv_three"
