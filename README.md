@@ -2,20 +2,24 @@ clinacl
 =======
 
 A command line tool for playing with the [NaCl cryptography
-library](http://nacl.cr.yp.to/). This is a toy, so please don't feed it
-any important data.
+library](http://nacl.cr.yp.to/), with support for [Keybase-style
+signatures](https://keybase.io/docs/api/1.0/sigs). This is a toy, so
+please don't feed it any private data or rely on it in production.
 
-The easiest way to install is to run
+Use [pip](https://pip.pypa.io/en/latest/) to install it:
 
-    pip install .
+```bash
+pip install clinacl
+```
 
-inside the project directory. You can use a
-[virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) to
-avoid needing root permissions and dumping crap in your system
-directories. You can also use pip's `--user` flag to install in your
-home dir, if you add `~/.local/bin` to your `PATH`.
+Note that depending on how Python is set up on your machine, you might
+need to use `sudo` with that.
 
-Symmetric encryption example:
+
+Examples
+--------
+
+### Symmetric Encryption
 
     $ plaintext="Release the hounds."
     $ key=$(clinacl secretgen)
@@ -28,7 +32,7 @@ Symmetric encryption example:
     $ echo $ciphertext | clinacl decrypt $key
     Release the hounds.
 
-Public key signature example:
+### Public Key Signatures
 
     $ message="The truth, the whole truth, and nothing but the truth."
     $ signingkey=$(clinacl signinggen)
@@ -42,7 +46,7 @@ Public key signature example:
     $ echo $message | clinacl sign $signingkey | clinacl verify $verifykey
     The truth, the whole truth, and nothing but the truth.
 
-Verifying a Keybase sigchain link:
+### Verifying a Keybase Signature
 
     $ link="g6Rib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgb0QEGch1mSRBwXnmm+ElpwHWSpGF4Y5wGq9Wz1BEOsYKp3BheWxvYWTFA5x7ImJvZHkiOnsiZGV2aWNlIjp7ImlkIjoiZjRmZTNkMWYwYzgxM2QxMzBiZDUwNTllMWFkMzI4MTgiLCJzdGF0dXMiOjIsInR5cGUiOiJkZXNrdG9wIn0sImtleSI6eyJlbGRlc3Rfa2lkIjoiMDEwMTA0ZTcyNDM2MmU3YmE2NjMzOTgwYTYyNTdmMDQzZjdjM2Q4NzMzNTUwNTk0YTc5MmFhY2Y2YzZkNDY3N2RkOTQwYSIsImhvc3QiOiJrZXliYXNlLmlvIiwia2lkIjoiMDEyMDZmNDQwNDE5Yzg3NTk5MjQ0MWMxNzllNjliZTEyNWE3MDFkNjRhOTE4NWUxOGU3MDFhYWY1NmNmNTA0NDNhYzYwYSIsInVpZCI6ImJmNjUyNjZkMGQ4ZGYzYWQ1ZDFiMzY3ZjU3OGU2ODE5IiwidXNlcm5hbWUiOiJyYWxwaCJ9LCJyZXZva2UiOnsia2lkcyI6WyIwMTIwNWVkYzAwYTE3M2E1NDMyNGFkNTIzN2M5MzlhNmFiYmY5ZmY2MTIxMDk0NjY4OWRhMWQ3MjEzMjlhY2RhYjlkZTBhIiwiMDEyMWE1M2MyMzcxMGUxODUwYTMyODJhMWFhZDZmNTM4NjczZDA3OGMxMTJmMWYyM2UyYjE3MTE5NDFiZTFjM2RkNGIwYSJdfSwidHlwZSI6InJldm9rZSIsInZlcnNpb24iOjF9LCJjbGllbnQiOnsibmFtZSI6ImtleWJhc2UuaW8gZ28gY2xpZW50IiwidmVyc2lvbiI6IjAuMS43In0sImN0aW1lIjoxNDI5NjUxNDk5LCJleHBpcmVfaW4iOjMxNTM2MDAwMCwibWVya2xlX3Jvb3QiOnsiY3RpbWUiOjE0Mjk2NTEzOTIsImhhc2giOiIyZGVhODhjMjNiYjc0OWY5ZGQ5OWNlYjAyYzQ2MGM2NTgxYzc4NjVhMmFiZTU0Y2ZkNDVmZmU2OWZlODA0MWFjY2UyOWJmOGMwMzcxZjgwZGZlZWMwNWY4NmY5MWVhYzMxN2RhY2JjMmU1MDM2NmIxNGJkOTg2ZjZhMjVmNDZhMiIsInNlcW5vIjoyNTd9LCJwcmV2IjoiNTgwOGQ2OTRlOWFjNDFhMDEwZjMwNTk5YmRmNGM4MDdlNzc4Mjg2YWYyMmZkNWY0NWExMmJjZWM3NDBjMGEzNiIsInNlcW5vIjoxNSwidGFnIjoic2lnbmF0dXJlIn2jc2lnxEAaomeO/0vh2uEtIo1HQ6lQW07IKoSqfLyYnpbbks3tYxo+a7VXMC/NgzdUExivyhira4cUzk43Q7EboDF2EDEMqHNpZ190eXBlIKN0YWfNAgKndmVyc2lvbgE="
     $ echo $link | clinacl keybase
